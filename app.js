@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan');
 
 // express app
 const app = express();
@@ -9,6 +10,10 @@ app.set('view engine', 'ejs');
 // listen for requests
 app.listen(3000);
 
+// middleware & static files
+app.use(express.static('public'));
+app.use(morgan ('dev'));
+
 app.get('/', (req, res) => {
     //res.send('<p>home page</p>');
     //res.sendFile('./views/index.html', { root: __dirname});
@@ -16,10 +21,10 @@ app.get('/', (req, res) => {
         {title: 'Yoshi finds eggs', snippet: 'Loream ipsum etc etc etc'},
         {title: 'Mario finds stars', snippet: 'Loream ipsum etc etc etc'},
         {title: 'How to defeat Bowser', snippet: 'Loream ipsum etc etc etc'},
+
     ]
     res.render('index', {title: 'Home', blogs});
 });
-
 
 app.get('/about', (req, res) => {
     //res.send('<p>about page</p>');
