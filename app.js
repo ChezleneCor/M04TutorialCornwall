@@ -1,5 +1,15 @@
 const express = require('express');
 const morgan = require('morgan');
+const mongoose = require('mongoose');
+const Blog = require('./models/blog');
+
+// connect to mongo db
+const db_URI = 'mongodb+srv://netninja:test1234@nodetuts.kzvqhwx.mongodb.net/?retryWrites=true&w=majority&appName=node-tuts'
+mongoose.connect(db_URI)
+    .then((result) => {
+        console.log('Connected to db')})
+    .catch((err) => console.log(err));
+
 
 // express app
 const app = express();
@@ -14,16 +24,55 @@ app.listen(3000);
 app.use(express.static('public'));
 app.use(morgan ('dev'));
 
-app.get('/', (req, res) => {
-    //res.send('<p>home page</p>');
-    //res.sendFile('./views/index.html', { root: __dirname});
-    const blogs = [
-        {title: 'Yoshi finds eggs', snippet: 'Loream ipsum etc etc etc'},
-        {title: 'Mario finds stars', snippet: 'Loream ipsum etc etc etc'},
-        {title: 'How to defeat Bowser', snippet: 'Loream ipsum etc etc etc'},
+//mongoose and mongo sandbox routes
+app.get('/add-blog', (req, res) => {
+    const blog = new Blog({
+        title: 'new blog',
+        snippet: 'about my new blog',
+        body: 'more about my new blog'
+    });
 
-    ]
-    res.render('index', {title: 'Home', blogs});
+    blog.save()
+        .then((result) => {
+            res.send(result)
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+})
+
+app.get('/all-blogs', (req, res) => {
+    Blog.find()
+        .then((result) =>{
+            res.send(result);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+})
+
+app.get('/single-blog', (req, res) => {
+    Blog.findById('66284a6f06b723327f9a7164')
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+})
+
+app.get('/blogs', (req, res) => {
+    Blog.find()
+    .then((result) => {
+        res.render('index', { title: 'All Blogs', blogs: result})
+    })
+    .catch((err) => {
+        console.log(err);
+    })
+});
+
+app.get('/', (req, res) => {
+    res.redirect('/blogs');
 });
 
 app.get('/about', (req, res) => {
@@ -47,3 +96,6 @@ app.use((req, res) => {
     //res.status(404).sendFile('./views/404.html', { root: __dirname})
     res.status(404).render('404', {title: '404'});
 });
+
+// user: ccornwall2
+// pass: PTSuwwxNgHiV7VhN
