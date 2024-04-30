@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const blogRoutes = require('./routes/blogRoutes')
+const PORT = process.env.PORT || 3000;
 
 // express app
 const app = express();
@@ -9,7 +10,9 @@ const app = express();
 // connect to mongo db
 const db_URI = 'mongodb+srv://netninja:test1234@nodetuts.kzvqhwx.mongodb.net/node-tuts?retryWrites=true&w=majority&appName=node-tuts'
 mongoose.connect(db_URI)
-  .then(result => app.listen(3000))
+  .then(result => app.listen(PORT, () => {
+    console.log(`server started on port ${PORT}`);
+  }))
   .catch(err => console.log(err));
 
 //register view engine
